@@ -8,6 +8,7 @@ pub const Backend = enum {
     win32_dx12,
     glfw,
     sdl2_opengl3,
+    sdl3_gpu,
 };
 
 pub fn build(b: *std.Build) void {
@@ -349,6 +350,18 @@ pub fn build(b: *std.Build) void {
                     "libs/imgui/backends/imgui_impl_opengl3.cpp",
                 },
                 .flags = &(cflags.* ++ .{"-DIMGUI_IMPL_OPENGL_LOADER_CUSTOM"}),
+            });
+        },
+        .sdl3_gpu => {
+            if (b.lazyDependency("zsdl", .{})) |zsdl| {
+                imgui.addIncludePath(zsdl.path("libs/sdl3/include"));
+            }
+            imgui.addCSourceFiles(.{
+                .files = &.{
+                    "libs/imgui/backends/imgui_impl_sdl3.cpp",
+                    "libs/imgui/backends/imgui_impl_sdlgpu3.cpp",
+                },
+                .flags = cflags,
             });
         },
         .no_backend => {},
