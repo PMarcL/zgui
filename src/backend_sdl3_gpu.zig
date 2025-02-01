@@ -15,7 +15,7 @@ pub fn initWithGPUInitInfo(
 pub fn init(
     window: *const anyopaque,
     device: *const anyopaque,
-    color_target_format: c_int,
+    color_target_format: c_uint,
     msaa_samples: c_int,
 ) void {
     initWithGPUInitInfo(window, .{
@@ -60,7 +60,7 @@ pub fn draw(
 
 pub const InitInfo = extern struct {
     device: *const anyopaque, // SDL_GPUDevice
-    color_target_format: c_int, // SDL_GPUTextureFormat
+    color_target_format: c_uint, // SDL_GPUTextureFormat
     msaa_samples: c_int, // SDL_GPUSampleCount
 };
 

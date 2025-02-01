@@ -55,7 +55,8 @@
 
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
-#include "imgui_impl_sdl3.h"
+// FIX(zig-gamedev):
+// #include "imgui_impl_sdl3.h"
 
 // Clang warnings with -Weverything
 #if defined(__clang__)
@@ -88,6 +89,21 @@
 #ifndef SDLK_GRAVE
 #define SDLK_GRAVE SDLK_BACKQUOTE
 #endif
+
+// FIX(zig-gamedev):
+extern "C" {
+
+bool ImGui_ImplSDL3_InitForSDLGPU(SDL_Window* window);
+void ImGui_ImplSDL3_Shutdown();
+void ImGui_ImplSDL3_NewFrame();
+bool ImGui_ImplSDL3_ProcessEvent(const SDL_Event* event);
+
+}
+
+// FIX(zig-gamedev):
+// We need these forward declarations as we aren't importing imgui_impl_sdl3.h
+enum ImGui_ImplSDL3_GamepadMode { ImGui_ImplSDL3_GamepadMode_AutoFirst, ImGui_ImplSDL3_GamepadMode_AutoAll, ImGui_ImplSDL3_GamepadMode_Manual };
+IMGUI_IMPL_API void     ImGui_ImplSDL3_SetGamepadMode(ImGui_ImplSDL3_GamepadMode mode, SDL_Gamepad** manual_gamepads_array = nullptr, int manual_gamepads_count = -1);
 
 // SDL Data
 struct ImGui_ImplSDL3_Data

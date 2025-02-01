@@ -28,8 +28,31 @@
 
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
-#include "imgui_impl_sdlgpu3.h"
+// FIX(zig-gamedev):
+// #include "imgui_impl_sdlgpu3.h"
+#include <SDL3/SDL_gpu.h>
 #include "imgui_impl_sdlgpu3_shaders.h"
+
+// FIX(zig-gamedev):
+extern "C" {
+
+struct ImGui_ImplSDLGPU3_InitInfo
+{
+    SDL_GPUDevice*       Device             = nullptr;
+    SDL_GPUTextureFormat ColorTargetFormat  = SDL_GPU_TEXTUREFORMAT_INVALID;
+    SDL_GPUSampleCount   MSAASamples        = SDL_GPU_SAMPLECOUNT_1;
+};
+
+bool     ImGui_ImplSDLGPU3_Init(ImGui_ImplSDLGPU3_InitInfo* info);
+void     ImGui_ImplSDLGPU3_Shutdown();
+void     ImGui_ImplSDLGPU3_NewFrame();
+void     Imgui_ImplSDLGPU3_PrepareDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer);
+void     ImGui_ImplSDLGPU3_RenderDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass, SDL_GPUGraphicsPipeline* pipeline = nullptr);
+
+}
+
+// FIX(zig-gamedev):
+IMGUI_IMPL_API void     ImGui_ImplSDLGPU3_DestroyFontsTexture();
 
 // SDL_GPU Data
 
