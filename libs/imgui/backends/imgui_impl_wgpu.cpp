@@ -56,13 +56,47 @@
 
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
-#include "imgui_impl_wgpu.h"
+
+// FIX(zig-gamedev):
+// #include "imgui_impl_wgpu.h"
+
 #include <limits.h>
 #include <webgpu/webgpu.h>
 
 // Dear ImGui prototypes from imgui_internal.h
 extern ImGuiID ImHashData(const void* data_p, size_t data_size, ImU32 seed = 0);
 #define MEMALIGN(_SIZE,_ALIGN)        (((_SIZE) + ((_ALIGN) - 1)) & ~((_ALIGN) - 1))    // Memory align (copied from IM_ALIGN() macro).
+
+// FIX(zig-gamedev): We removed header file and declare all our external functions here.
+extern "C" {
+
+// Initialization data, for ImGui_ImplWGPU_Init()
+struct ImGui_ImplWGPU_InitInfo
+{
+    WGPUDevice              Device;
+    int                     NumFramesInFlight = 3;
+    WGPUTextureFormat       RenderTargetFormat = WGPUTextureFormat_Undefined;
+    WGPUTextureFormat       DepthStencilFormat = WGPUTextureFormat_Undefined;
+    WGPUMultisampleState    PipelineMultisampleState = {};
+
+    ImGui_ImplWGPU_InitInfo()
+    {
+        PipelineMultisampleState.count = 1;
+        PipelineMultisampleState.mask = UINT32_MAX;
+        PipelineMultisampleState.alphaToCoverageEnabled = false;
+    }
+};
+
+IMGUI_IMPL_API bool ImGui_ImplWGPU_Init(ImGui_ImplWGPU_InitInfo* init_info);
+IMGUI_IMPL_API void ImGui_ImplWGPU_Shutdown();
+IMGUI_IMPL_API void ImGui_ImplWGPU_NewFrame();
+IMGUI_IMPL_API void ImGui_ImplWGPU_RenderDrawData(ImDrawData* draw_data, WGPURenderPassEncoder pass_encoder);
+
+// Use if you want to reset your rendering device without losing Dear ImGui state.
+IMGUI_IMPL_API bool ImGui_ImplWGPU_CreateDeviceObjects();
+IMGUI_IMPL_API void ImGui_ImplWGPU_InvalidateDeviceObjects();
+
+}
 
 // WebGPU data
 struct RenderResources

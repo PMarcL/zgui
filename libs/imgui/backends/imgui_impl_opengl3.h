@@ -30,6 +30,8 @@
 #include "imgui.h"      // IMGUI_IMPL_API
 #ifndef IMGUI_DISABLE
 
+// FIX(zig-gamedev)
+extern "C" {
 // Follow "Getting Started" link and check examples/ folder to learn about using backends!
 IMGUI_IMPL_API bool     ImGui_ImplOpenGL3_Init(const char* glsl_version = nullptr);
 IMGUI_IMPL_API void     ImGui_ImplOpenGL3_Shutdown();
@@ -41,6 +43,7 @@ IMGUI_IMPL_API bool     ImGui_ImplOpenGL3_CreateFontsTexture();
 IMGUI_IMPL_API void     ImGui_ImplOpenGL3_DestroyFontsTexture();
 IMGUI_IMPL_API bool     ImGui_ImplOpenGL3_CreateDeviceObjects();
 IMGUI_IMPL_API void     ImGui_ImplOpenGL3_DestroyDeviceObjects();
+}
 
 // Configuration flags to add in your imconfig file:
 //#define IMGUI_IMPL_OPENGL_ES2     // Enable ES 2 (Auto-detected on Emscripten)

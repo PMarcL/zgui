@@ -24,6 +24,9 @@
 #include <dxgiformat.h> // DXGI_FORMAT
 #include <d3d12.h>      // D3D12_CPU_DESCRIPTOR_HANDLE
 
+// FIX(zig-gamedev):
+extern "C" {
+
 // Initialization data, for ImGui_ImplDX12_Init()
 struct ImGui_ImplDX12_InitInfo
 {
@@ -62,6 +65,8 @@ IMGUI_IMPL_API bool     ImGui_ImplDX12_Init(ID3D12Device* device, int num_frames
 // Use if you want to reset your rendering device without losing Dear ImGui state.
 IMGUI_IMPL_API bool     ImGui_ImplDX12_CreateDeviceObjects();
 IMGUI_IMPL_API void     ImGui_ImplDX12_InvalidateDeviceObjects();
+
+}
 
 // [BETA] Selected render state data shared with callbacks.
 // This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplDX12_RenderDrawData() call.

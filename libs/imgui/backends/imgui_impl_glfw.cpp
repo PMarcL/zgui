@@ -90,7 +90,8 @@
 
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
-#include "imgui_impl_glfw.h"
+// FIX(zig-gamedev):
+// #include "imgui_impl_glfw.h"
 
 // Clang warnings with -Weverything
 #if defined(__clang__)
@@ -158,6 +159,33 @@
 #define GLFW_HAS_GETKEYNAME             (GLFW_VERSION_COMBINED >= 3200) // 3.2+ glfwGetKeyName()
 #define GLFW_HAS_GETERROR               (GLFW_VERSION_COMBINED >= 3300) // 3.3+ glfwGetError()
 
+// FIX(zig-gamedev):
+extern "C" {
+
+bool     ImGui_ImplGlfw_InitForOpenGL(GLFWwindow* window, bool install_callbacks);
+bool     ImGui_ImplGlfw_InitForVulkan(GLFWwindow* window, bool install_callbacks);
+bool     ImGui_ImplGlfw_InitForOther(GLFWwindow* window, bool install_callbacks);
+void     ImGui_ImplGlfw_Shutdown();
+void     ImGui_ImplGlfw_NewFrame();
+
+void     ImGui_ImplGlfw_InstallCallbacks(GLFWwindow* window);
+void     ImGui_ImplGlfw_RestoreCallbacks(GLFWwindow* window);
+
+void     ImGui_ImplGlfw_SetCallbacksChainForAllWindows(bool chain_for_all_windows);
+
+void     ImGui_ImplGlfw_WindowFocusCallback(GLFWwindow* window, int focused);        // Since 1.84
+void     ImGui_ImplGlfw_CursorEnterCallback(GLFWwindow* window, int entered);        // Since 1.84
+void     ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double x, double y);   // Since 1.87
+void     ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void     ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+void     ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void     ImGui_ImplGlfw_CharCallback(GLFWwindow* window, unsigned int c);
+void     ImGui_ImplGlfw_MonitorCallback(GLFWmonitor* monitor, int event);
+
+void     ImGui_ImplGlfw_Sleep(int milliseconds);
+
+} // extern "C"
+
 // GLFW data
 enum GlfwClientApi
 {
@@ -180,6 +208,9 @@ struct ImGui_ImplGlfw_Data
     bool                    InstalledCallbacks;
     bool                    CallbacksChainForAllWindows;
     bool                    WantUpdateMonitors;
+
+    ImVec2                  DpiScale; // fix(zig-gamedev)
+
 #ifdef EMSCRIPTEN_USE_EMBEDDED_GLFW3
     const char*             CanvasSelector;
 #endif
@@ -470,7 +501,7 @@ void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double x, double y)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
     if (bd->PrevUserCallbackCursorPos != nullptr && ImGui_ImplGlfw_ShouldChainCallback(window))
-        bd->PrevUserCallbackCursorPos(window, x, y);
+        bd->PrevUserCallbackCursorPos(window, x * bd->DpiScale.x, y * bd->DpiScale.y); // fix(zig-gamedev)
 
     ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -480,8 +511,8 @@ void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double x, double y)
         x += window_x;
         y += window_y;
     }
-    io.AddMousePosEvent((float)x, (float)y);
-    bd->LastValidMousePos = ImVec2((float)x, (float)y);
+    io.AddMousePosEvent((float)x * bd->DpiScale.x, (float)y * bd->DpiScale.y); // fix(zig-gamedev)
+    bd->LastValidMousePos = ImVec2((float)x * bd->DpiScale.x, (float)y * bd->DpiScale.y); // fix(zig-gamedev)
 }
 
 // Workaround: X11 seems to send spurious Leave/Enter events which would make us lose our position,
@@ -627,6 +658,8 @@ static bool ImGui_ImplGlfw_Init(GLFWwindow* window, bool install_callbacks, Glfw
     bd->Window = window;
     bd->Time = 0.0;
     bd->WantUpdateMonitors = true;
+
+    bd->DpiScale = ImVec2{ 1.0, 1.0 }; // fix(zig-gamedev)
 
     ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
     platform_io.Platform_SetClipboardTextFn = [](ImGuiContext*, const char* text) { glfwSetClipboardString(nullptr, text); };
@@ -795,8 +828,8 @@ static void ImGui_ImplGlfw_UpdateMouseData()
                     mouse_x += window_x;
                     mouse_y += window_y;
                 }
-                bd->LastValidMousePos = ImVec2((float)mouse_x, (float)mouse_y);
-                io.AddMousePosEvent((float)mouse_x, (float)mouse_y);
+                bd->LastValidMousePos = ImVec2((float)mouse_x * bd->DpiScale.x, (float)mouse_y * bd->DpiScale.y); // fix(zig-gamedev)
+                io.AddMousePosEvent((float)mouse_x * bd->DpiScale.x, (float)mouse_y * bd->DpiScale.y); // fix(zig-gamedev)
             }
         }
 
@@ -967,6 +1000,10 @@ void ImGui_ImplGlfw_NewFrame()
         io.DisplayFramebufferScale = ImVec2((float)display_w / (float)w, (float)display_h / (float)h);
     if (bd->WantUpdateMonitors)
         ImGui_ImplGlfw_UpdateMonitors();
+
+    // fix(zig-gamedev)
+    bd->DpiScale.x = ceil(io.DisplayFramebufferScale.x);
+    bd->DpiScale.y = ceil(io.DisplayFramebufferScale.y);
 
     // Setup time step
     // (Accept glfwGetTime() not returning a monotonically increasing value. Seems to happens on disconnecting peripherals and probably on VMs and Emscripten, see #6491, #6189, #6114, #3644)

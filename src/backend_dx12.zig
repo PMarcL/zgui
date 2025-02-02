@@ -43,6 +43,7 @@ pub fn render(
 
 // Those functions are defined in 'imgui_impl_dx12.cpp`
 // (they include few custom changes).
+// TODO: This function signature was changed in ImGui 1.91.8. This, the `init` function above and all callers need to be updated.
 extern fn ImGui_ImplDX12_Init(
     device: *const anyopaque, // ID3D12Device
     num_frames_in_flight: u32,
