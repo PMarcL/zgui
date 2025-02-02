@@ -30,26 +30,33 @@ pub fn deinit() void {
     ImGui_ImplSDLGPU3_Shutdown();
 }
 
-pub fn newFrame() void {
+pub fn processEvent(event: *const anyopaque) bool {
+    return backend_sdl3.processEvent(event);
+}
+
+pub fn newFrame(fb_width: u32, fb_height: u32) void {
     ImGui_ImplSDLGPU3_NewFrame();
     backend_sdl3.newFrame();
 
-    // TODO: The following is not in the example here:
-    // https://github.com/ocornut/imgui/blob/master/examples/example_sdl3_sdlgpu3/main.cpp
-    // But, the SDL2 opengl version of newFrame does this:
-    // gui.io.setDisplaySize(fb_width, fb_height);
-    // gui.io.setDisplayFramebufferScale(1.0, 1.0);
+    gui.io.setDisplaySize(@as(f32, @floatFromInt(fb_width)), @as(f32, @floatFromInt(fb_height)));
+    gui.io.setDisplayFramebufferScale(1.0, 1.0);
 
     gui.newFrame();
 }
 
-pub fn draw(
+pub fn render() void {
+    gui.render();
+}
+
+pub fn prepareDrawData(command_buffer: *const anyopaque) void {
+    Imgui_ImplSDLGPU3_PrepareDrawData(gui.getDrawData(), command_buffer);
+}
+
+pub fn renderDrawData(
     command_buffer: *const anyopaque, // SDL_GPUCommandBuffer
     render_pass: *const anyopaque, // SDL_GPURenderPass
     pipeline: ?*const anyopaque, // SDL_GPUGraphicsPipeline
 ) void {
-    gui.render();
-    ImGui_ImplSDLGPU3_PrepareDrawData(gui.getDrawData(), command_buffer);
     ImGui_ImplSDLGPU3_RenderDrawData(
         gui.getDrawData(),
         command_buffer,
@@ -67,7 +74,7 @@ pub const InitInfo = extern struct {
 extern fn ImGui_ImplSDLGPU3_Init(info: *const anyopaque) bool;
 extern fn ImGui_ImplSDLGPU3_Shutdown() void;
 extern fn ImGui_ImplSDLGPU3_NewFrame() void;
-extern fn ImGui_ImplSDLGPU3_PrepareDrawData(
+extern fn Imgui_ImplSDLGPU3_PrepareDrawData(
     draw_data: *const anyopaque,
     command_buffer: *const anyopaque, // SDL_GPUCommandBuffer
 ) void;
