@@ -1,5 +1,6 @@
 .{
-    .name = "zgui",
+    .name = .zgui,
+    .fingerprint = 0xe78160e482c6425,
     .version = "0.6.0-dev",
     .paths = .{
         "build.zig",
@@ -26,9 +27,8 @@
             .lazy = true,
         },
         .zsdl = .{
-            .url = "https://github.com/zig-gamedev/zsdl/archive/d03b4d4e7cb7a74e01d9dad30d0f1692286f58f8.tar.gz",
-            .hash = "12205dcdb071febd9d3412a65e6235b832205cc49c1e20c88a71f62ada4e27dfb878",
-            .lazy = true,
+          .url = "https://github.com/PMarcL/zsdl/archive/c65ad762bc82ac2918693c8352478d5ee89256f0.tar.gz",
+          .hash = "zsdl-0.4.0-dev-2JAHIv9WWQCkVeHeAkwzKhy7CFo3nKKMdqXTESuoSB8B",
         },
         .freetype = .{
             .url = "https://github.com/hexops/freetype/archive/972cd37bccecae2cc9f54cf0b562263a13209d02.tar.gz",
