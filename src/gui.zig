@@ -545,7 +545,21 @@ pub const Key = enum(c_int) {
     mod_super = 1 << 15,
     mod_mask_ = 0xf000,
 };
+const ImguiKeyChord = c_int;
+pub const KeyChord = struct {
+    key: Key,
+    mods: []const Key,
 
+    fn toImguiKeyChord(self: KeyChord) ImguiKeyChord {
+        var key_chord: ImguiKeyChord = @intFromEnum(self.key);
+        for (self.mods) |m| {
+            const mod: ImguiKeyChord = @intFromEnum(m);
+            std.debug.assert(mod & @as(ImguiKeyChord, @intFromEnum(Key.mod_mask_)) > 0);
+            key_chord |= mod;
+        }
+        return key_chord;
+    }
+};
 //--------------------------------------------------------------------------------------------------
 pub const WindowFlags = packed struct(c_int) {
     no_title_bar: bool = false,
@@ -3452,9 +3466,14 @@ pub fn isKeyReleased(key: Key) bool {
     return zguiIsKeyReleased(key);
 }
 
+pub fn isKeyChordPressed(key_chord: KeyChord) bool {
+    return zguiIsKeyChordPressed(key_chord.toImguiKeyChord());
+}
+
 extern fn zguiIsKeyDown(key: Key) bool;
 extern fn zguiIsKeyPressed(key: Key, repeat: bool) bool;
 extern fn zguiIsKeyReleased(key: Key) bool;
+extern fn zguiIsKeyChordPressed(key_chord: ImguiKeyChord) bool;
 //--------------------------------------------------------------------------------------------------
 //
 // Helpers

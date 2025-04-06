@@ -2003,6 +2003,11 @@ extern "C"
     {
         return ImGui::IsKeyReleased(key);
     }
+
+    ZGUI_API bool zguiIsKeyChordPressed(ImGuiKeyChord key_chord)
+    {
+        return ImGui::IsKeyChordPressed(key_chord);
+    }
     //--------------------------------------------------------------------------------------------------
     //
     // DrawList
