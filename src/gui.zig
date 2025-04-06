@@ -3442,7 +3442,19 @@ pub fn isKeyDown(key: Key) bool {
     return zguiIsKeyDown(key);
 }
 
+pub fn isKeyPressed(key: Key, args: struct {
+    repeat: bool = false,
+}) bool {
+    return zguiIsKeyPressed(key, args.repeat);
+}
+
+pub fn isKeyReleased(key: Key) bool {
+    return zguiIsKeyReleased(key);
+}
+
 extern fn zguiIsKeyDown(key: Key) bool;
+extern fn zguiIsKeyPressed(key: Key, repeat: bool) bool;
+extern fn zguiIsKeyReleased(key: Key) bool;
 //--------------------------------------------------------------------------------------------------
 //
 // Helpers
