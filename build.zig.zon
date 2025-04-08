@@ -27,8 +27,8 @@
             .lazy = true,
         },
         .zsdl = .{
-            .url = "https://github.com/PMarcL/zsdl/archive/9d98205c9263ea13c6c97d6ab90515e600a96a80.tar.gz",
-            .hash = "zsdl-0.4.0-dev-rFpjE2xXWQDUf9Xtbgkqhqoc35sT-MgZtJ4BkVpkcF_t",
+            .url = "https://github.com/zig-gamedev/zsdl/archive/41efa4c1ef3c59eed8f2ea3d10480ef071932249.tar.gz",
+            .hash = "zsdl-0.4.0-dev-rFpjE3ZXWQB2uAw35Ihe3ACDz58MELCMWzow3O6lrhiX",
             .lazy = true,
         },
         .freetype = .{
